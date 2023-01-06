@@ -104,7 +104,7 @@ public class OrderController {
 		Integer dispatched = 0;
 		Integer pending = 0;
 
-		if(orderList.size()>0)
+		if(orderList!=null)
 			for(Order order: orderList) {
 				if(order.getStatus().equals("dispatched"))
 					dispatched++;
