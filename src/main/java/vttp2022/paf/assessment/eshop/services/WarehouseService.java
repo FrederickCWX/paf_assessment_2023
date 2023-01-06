@@ -3,7 +3,9 @@ package vttp2022.paf.assessment.eshop.services;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -26,24 +28,20 @@ public class WarehouseService {
 	private CustomerRepository customerRepo;
 
 	@Autowired
-	private OrderRepository orderRepo;
-
-	private static String URL = "http://paf.chuklee.com/dispatch/";
+	private OrderRepository orderRepo; 
 
 	// You cannot change the method's signature
 	// You may add one or more checked exceptions
 	public OrderStatus dispatch(Order order) {
 
 		String orderId = order.getOrderId();
+		String url = "http://paf.chuklee.com/dispatch/"+orderId;
 		List<LineItem> liList = order.getLineItems();
 
 		RestTemplate restTemplate = new RestTemplate();
 		ResponseEntity<String> resp = null;
 
-		try {
-			HttpHeaders httpHeaders = new HttpHeaders();
-			httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-			JsonArrayBuilder jArrayBuilder = Json.createArrayBuilder();
+		JsonArrayBuilder jArrayBuilder = Json.createArrayBuilder();
 			for(LineItem li: liList)
 				jArrayBuilder.add(
 							Json.createObjectBuilder()
@@ -61,6 +59,17 @@ public class WarehouseService {
 																.add("lineItems", ja)
 																.add("createdBy", "Chan Weixun Frederick")
 																.build();
+
+		try {
+			HttpHeaders httpHeaders = new HttpHeaders();
+			httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity request = new HttpEntity(httpHeaders);
+            resp = restTemplate.exchange(
+                    url,
+                    HttpMethod.POST,
+                    request,
+                    String.class,
+                    1);
 
 
 			
