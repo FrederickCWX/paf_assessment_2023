@@ -85,6 +85,7 @@ public class OrderController {
 		order.setLineItems(itemList);
 		order.setOrderDate(date);
 
+		System.out.println(orderId);
 		//Task 3d
 		orderRepo.createOrder(order);
 

@@ -1,7 +1,7 @@
 CREATE SCHEMA IF NOT EXISTS `eshop`;
 USE `eshop` ;
 
-CREATE TABLE IF NOT EXISTS `eshop`.`customers` (
+CREATE TABLE IF NOT EXISTS customers (
   name varchar(32) not null,
   address varchar(128) not null,
   email varchar(128) not null,
@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS `eshop`.`customers` (
   primary key(name)
 );
 
-CREATE TABLE IF NOT EXISTS `eshop`.`orders` (
+CREATE TABLE IF NOT EXISTS orders (
   order_id varchar(8) not null,
   name varchar(32) not null,
   order_date date not null,
@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS `eshop`.`orders` (
   foreign key(name) references customers(name)
 );
 
-CREATE TABLE IF NOT EXISTS `eshop`.`line_items` (
+CREATE TABLE IF NOT EXISTS line_items (
   item_id int auto_increment,
   order_id varchar(8) not null,
   item varchar(128) not null,
@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS `eshop`.`line_items` (
   foreign key(order_id) references orders(order_id)
 );
 
-CREATE TABLE IF NOT EXISTS `eshop`.`order_status` (
+CREATE TABLE IF NOT EXISTS order_status (
   order_id varchar(8) not null,
   delivery_id varchar(128) not null,
   status enum('pending', 'dispatched') default 'pending',

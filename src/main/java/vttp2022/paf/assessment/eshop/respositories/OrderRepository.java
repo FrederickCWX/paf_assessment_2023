@@ -21,22 +21,25 @@ public class OrderRepository {
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
-	public Integer createLineItems(String orderId, LineItem li) {
-		return jdbcTemplate.update(SQL_INSERT_LINE_ITEM, 
+	public void createLineItems(String orderId, LineItem li) {
+		System.out.println(orderId);
+		jdbcTemplate.update(SQL_INSERT_LINE_ITEM, 
 					orderId, 
 					li.getItem(), 
 					li.getQuantity());
 	}
 
 	public Integer createOrder(Order order) {
-		List<LineItem> liList = order.getLineItems();
-		for(LineItem li: liList)
-			createLineItems(order.getOrderId(), li);
-
-		return jdbcTemplate.update(SQL_INSERT_ORDER, 
+		Integer i = jdbcTemplate.update(SQL_INSERT_ORDER, 
 					order.getOrderId(),
 					order.getName(),
 					order.getOrderDate());
+		String orderId = order.getOrderId();
+		List<LineItem> liList = order.getLineItems();
+		for(LineItem li: liList)
+			createLineItems(orderId, li);
+		
+		return i;
 	}
 
 	public List<Order> getOrdersByName(String name) {
