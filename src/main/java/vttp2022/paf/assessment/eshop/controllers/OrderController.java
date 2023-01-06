@@ -28,6 +28,7 @@ import jakarta.json.JsonReader;
 import jakarta.json.JsonString;
 import vttp2022.paf.assessment.eshop.models.Customer;
 import vttp2022.paf.assessment.eshop.models.LineItem;
+import vttp2022.paf.assessment.eshop.models.Order;
 import vttp2022.paf.assessment.eshop.respositories.CustomerRepository;
 import vttp2022.paf.assessment.eshop.respositories.OrderRepository;
 
@@ -37,6 +38,9 @@ public class OrderController {
 
 	@Autowired
 	private CustomerRepository customerRepo;
+
+	@Autowired
+	private OrderRepository orderRepo;
 
 	@PostMapping(path = "order")
 	public ResponseEntity<String> getOrder(@RequestBody Map<String, Object> payload) {
@@ -64,6 +68,7 @@ public class OrderController {
 
 		Optional<Customer> customer = customerRepo.findCustomerByName(name);
 
+		//Task 3a Error
 		JsonObject error = Json.createObjectBuilder()
 														.add("error", "Customer "+name+" not found")
 														.build();
@@ -74,14 +79,49 @@ public class OrderController {
 					.contentType(MediaType.APPLICATION_JSON)
 					.body(error.toString());
 
+		Order order = new Order();
+		order.setOrderId(orderId);
+		order.setCustomer(customer.get());
+		order.setLineItems(itemList);
+		order.setOrderDate(date);
+
+		//Task 3d
+		orderRepo.createOrder(order);
+
 		
 		
 		return ResponseEntity
 					.status(HttpStatus.OK)
 					.contentType(MediaType.APPLICATION_JSON)
-					.body("found");
+					.body("");
 	}
 
-	//TODO: Task 3
+	//Task 6
+	@GetMapping(path = "order/{name}/status")
+	public ResponseEntity<String> getCustomerOrderStatus(@PathVariable String name) {
+		List<Order> orderList = orderRepo.getOrdersByName(name);
+
+		Integer dispatched = 0;
+		Integer pending = 0;
+
+		if(orderList.size()>0)
+			for(Order order: orderList) {
+				if(order.getStatus().equals("dispatched"))
+					dispatched++;
+				else if(order.getStatus().equals("pending"))
+					pending++;
+			}
+
+		JsonObject result = Json.createObjectBuilder()
+				.add("name", name)
+				.add("dispatched", dispatched)
+				.add("pending", pending)
+				.build();
+
+		return ResponseEntity
+					.status(HttpStatus.OK)
+					.contentType(MediaType.APPLICATION_JSON)
+					.body(result.toString());
+	}
 
 }

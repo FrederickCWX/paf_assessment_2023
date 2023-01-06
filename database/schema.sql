@@ -11,23 +11,21 @@ CREATE TABLE IF NOT EXISTS `eshop`.`customers` (
 
 CREATE TABLE IF NOT EXISTS `eshop`.`orders` (
   order_id varchar(8) not null,
-  delivery_id varchar(128) not null,
   name varchar(32) not null,
   order_date date not null,
-  item_id int not null,
 
   primary key(order_id),
-  foreign key(delivery_id) references order_status(delivery_id),
-  foreign key(name) references customers(name),
-  foreign key(item_id) references order_items(item_id)
+  foreign key(name) references customers(name)
 );
 
-CREATE TABLE IF NOT EXISTS `eshop`.`order_items` (
+CREATE TABLE IF NOT EXISTS `eshop`.`line_items` (
   item_id int auto_increment,
+  order_id varchar(8) not null,
   item varchar(128) not null,
   quantity int not null,
 
-  primary key(item_id)
+  primary key(item_id),
+  foreign key(order_id) references orders(order_id)
 );
 
 CREATE TABLE IF NOT EXISTS `eshop`.`order_status` (
